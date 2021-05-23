@@ -13,8 +13,7 @@ import {
 } from 'react-native';
 
 import {dummyData, COLORS, SIZES, FONTS, icons, images} from '../constants';
-import {Profiles} from '../components';
-import {Extrapolate} from 'react-native-reanimated';
+import {Profiles, ProgressBar} from '../components';
 
 const Home = ({navigation}) => {
   const newSeasonScrollX = React.useRef(new Animated.Value(0)).current;
@@ -87,14 +86,16 @@ const Home = ({navigation}) => {
         keyExtractor={item => `${item.id}`}
         onScroll={Animated.event(
           [{nativeEvent: {contentOffset: {x: newSeasonScrollX}}}],
-          {useNativeDriver: false},
+          {useNativeDriver: false}
         )}
         renderItem={({item, index}) => {
           return (
             <TouchableWithoutFeedback
-              onPress={navigation.navigate('MovieDetail', {
-                selectedMovie: item,
-              })}>
+              onPress={() =>
+                navigation.navigate('MovieDetail', {
+                  selectedMovie: item,
+                })
+              }>
               <View
                 style={{
                   width: SIZES.width,
@@ -153,7 +154,7 @@ const Home = ({navigation}) => {
                           color: COLORS.white,
                           ...FONTS.h3,
                         }}>
-                        Play Now
+                        Assistir
                       </Text>
                     </View>
 
@@ -161,7 +162,7 @@ const Home = ({navigation}) => {
                     {item.stillWatching.length > 0 && (
                       <View style={{justifyContent: 'center'}}>
                         <Text style={{color: COLORS.white, ...FONTS.h4}}>
-                          Still Watching
+                          Continue Assistindo
                         </Text>
                         <Profiles profiles={item.stillWatching} />
                       </View>
@@ -222,6 +223,105 @@ const Home = ({navigation}) => {
     );
   }
 
+  function renderContinueWatchingSection() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: COLORS.black,
+        }}>
+        {/* Header */}
+        <View
+          style={{
+            flexDirection: 'row',
+            paddingHorizontal: SIZES.padding,
+            alignItems: 'center',
+          }}>
+          <Text
+            style={{
+              flex: 1,
+              color: COLORS.white,
+              ...FONTS.h2,
+            }}>
+            Continue Assistindo
+          </Text>
+          <Image
+            source={icons.right_arrow}
+            style={{
+              width: 20,
+              height: 20,
+              tintColor: COLORS.primary,
+            }}
+          />
+        </View>
+
+        {/* List */}
+
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            marginTop: SIZES.padding,
+          }}
+          data={dummyData.continueWatching}
+          keyExtractor={item => `${item.id}`}
+          renderItem={({item, index}) => {
+            return (
+              <TouchableWithoutFeedback
+                onPress={() =>
+                  navigation.navigate('MovieDetail', {selectedMovie: item})
+                }>
+                <View
+                  style={{
+                    marginLeft: index == 0 ? SIZES.padding : 20,
+                    marginRight:
+                      index == dummyData.continueWatching.length - 1
+                        ? SIZES.padding
+                        : 0,
+                  }}>
+                  {/* Thumbnail */}
+
+                  <Image
+                    source={item.thumbnail}
+                    resizeMode="cover"
+                    style={{
+                      width: SIZES.width / 3,
+                      height: SIZES.width / 3 + 60,
+                      borderRadius: 20,
+                    }}
+                  />
+
+                  {/* Name */}
+
+                  <Text
+                    style={{
+                      marginTop: SIZES.base,
+                      color: COLORS.white,
+                      ...FONTS.h4s,
+                    }}>
+                    {item.name}
+                  </Text>
+
+                  {/* Progressbar */}
+
+                  <ProgressBar
+                    containerStyle={{
+                      marginTop: SIZES.radius,
+                    }}
+                    barStyle={{
+                      height: 3,
+                    }}
+                    barPercentage={item.overallProgress}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+            );
+          }}
+        />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.black}}>
       {renderItem()}
@@ -229,6 +329,7 @@ const Home = ({navigation}) => {
       <ScrollView contentContainerStyle={{paddingBottom: 100}}>
         {renderNewSeasonSection()}
         {renderDots()}
+        {renderContinueWatchingSection()}
       </ScrollView>
     </SafeAreaView>
   );
