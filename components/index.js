@@ -1,5 +1,4 @@
-import TabIcon from "./TabIcon";
+import TabIcon from './TabIcon';
+import Profiles from './Profiles';
 
-export {
-    TabIcon,
-};
+export {TabIcon, Profiles};
